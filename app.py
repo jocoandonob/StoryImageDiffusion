@@ -7,6 +7,13 @@ import os
 from utils.image_processor import ImageProcessor
 from utils.story_generator import StoryGenerator
 from utils.diffusion_generator import DiffusionGenerator
+from dotenv import load_dotenv
+load_dotenv()
+# Check if OpenAI API key is loaded
+if os.getenv("OPENAI_API_KEY"):
+    print("[INFO] OPENAI_API_KEY loaded successfully.")
+else:
+    print("[WARNING] OPENAI_API_KEY is NOT set. Please set it in your environment.")
 
 # Configure page
 st.set_page_config(
@@ -316,23 +323,24 @@ def main():
     
     # Main content area
     col1, col2 = st.columns([1, 2])
-    
+
     uploaded_file = None  # Ensure variable is always defined
+    image = None          # Ensure variable is always defined
 
     with col1:
-        if not uploaded_file:
-            uploaded_file = st.file_uploader(
-                "📸 Upload Your Character Image",
-                type=["jpg", "jpeg", "png"],
-                help="Upload an image of your main character or scene"
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
-        else:
+        st.markdown('<div class="image-upload-area">', unsafe_allow_html=True)
+        uploaded_file = st.file_uploader(
+            "📸 Upload Your Character Image",
+            type=["jpg", "jpeg", "png"],
+            help="Upload an image of your main character or scene"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+        if uploaded_file:
             image = Image.open(uploaded_file)
             st.image(image, use_column_width=True, caption="Your Character")
-    
+
     with col2:
-        if uploaded_file:
+        if uploaded_file and image is not None:
             if st.button("🎨 Create Cartoon Story", use_container_width=True):
                 with st.spinner("Creating your magical story..."):
                     try:
